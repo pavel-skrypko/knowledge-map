@@ -5,7 +5,10 @@ export const dataMockNodes: Node[] = [
     id: "1",
     data: {
       label: "Node 1",
+      title: 'Node 1',
+      views: 100,
     },
+    type: 'articleNode',
     position: { x: 5, y: 5 },
   },
   {

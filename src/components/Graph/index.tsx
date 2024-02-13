@@ -18,6 +18,7 @@ import ReactFlow, {
   OnEdgesChange,
 } from 'reactflow';
 import { dataMockEdges, dataMockNodes } from './data.mock';
+import { CustomArticleNode } from './node';
 
 const fitViewOptions: FitViewOptions = {
   padding: 0.2,
@@ -26,6 +27,8 @@ const fitViewOptions: FitViewOptions = {
 const defaultEdgeOptions: DefaultEdgeOptions = {
   animated: true,
 };
+
+const nodeTypes = { articleNode: CustomArticleNode };
 
 const Graph = () => {
   const [nodes, setNodes] = useState<Node[]>(dataMockNodes);
@@ -56,10 +59,11 @@ const Graph = () => {
         fitView
         fitViewOptions={fitViewOptions}
         defaultEdgeOptions={defaultEdgeOptions}
+        nodeTypes={nodeTypes}
       >
         <Controls />
         <MiniMap />
-        <Background variant={BackgroundVariant.Dots} gap={10} size={1} />
+        <Background variant={BackgroundVariant.Cross} gap={10} size={1} />
       </ReactFlow>
     </div>
   );
