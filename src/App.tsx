@@ -1,13 +1,13 @@
-import '@mantine/core/styles.css';
+import "@mantine/core/styles.css";
 
-import { MantineProvider } from '@mantine/core';
+import { MantineProvider } from "@mantine/core";
 
-import { Graph } from './components';
+import BasicTabs from "./components/Tabs/Tabs";
 
 function App() {
   return (
     <MantineProvider>
-      <Graph />
+      <BasicTabs />
     </MantineProvider>
   );
 }
