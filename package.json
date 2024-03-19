@@ -16,11 +16,17 @@
     "@mantine/hooks": "^7.5.2",
     "@mui/icons-material": "^5.15.10",
     "@mui/material": "^5.15.10",
+    "@tabler/icons-react": "^2.47.0",
+    "dagre": "^0.8.5",
+    "postcss-modules": "^6.0.0",
     "react": "^18.2.0",
+    "react-css-modules": "^4.7.11",
     "react-dom": "^18.2.0",
     "react-force-graph": "^1.44.3",
     "react-hook-form": "^7.50.1",
+    "react-router-dom": "^6.22.1",
     "reactflow": "^11.10.3",
+    "three": "^0.161.0",
     "three-spritetext": "^1.8.2"
   },
   "devDependencies": {

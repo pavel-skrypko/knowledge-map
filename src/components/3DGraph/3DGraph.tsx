@@ -1,34 +1,11 @@
-import { ForceGraph3D } from "react-force-graph";
-import SpriteText from "three-spritetext";
-import { useCallback, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { ForceGraph3D } from 'react-force-graph';
+import SpriteText from 'three-spritetext';
+import { useDisclosure } from '@mantine/hooks';
+import { Modal } from '@mantine/core';
 
-const myData = {
-  nodes: [
-    { id: "Node 1" },
-    { id: "Node 2" },
-    { id: "Node 3" },
-    { id: "Node 4" },
-    { id: "Node 5" },
-    { id: "Node 6" },
-  ],
-  links: [
-    { source: "Node 1", target: "Node 2" },
-    { source: "Node 2", target: "Node 4" },
-    { source: "Node 1", target: "Node 5" },
-    { source: "Node 3", target: "Node 4" },
-    { source: "Node 2", target: "Node 6" },
-    { source: "Node 5", target: "Node 6" },
-  ],
-};
-
-interface Links {
-  source: {
-    id: string;
-  };
-  target: {
-    id: string;
-  };
-}
+import * as DATA from '../../data/graph.json';
+import NodeInfo from '../NodeInfo';
 
 interface Nodes {
   x?: number;
@@ -39,8 +16,16 @@ interface Nodes {
 export const ThreeDGraph = () => {
   const fgRef = useRef();
 
+  const [opened, { open, close }] = useDisclosure(false);
+  const [modalData, setModalData] = useState(null);
+
+  const GRAPH_DATA = useMemo(() => JSON.parse(JSON.stringify(DATA)), []);
+
   const handleClick = useCallback(
     (node: Nodes) => {
+      open();
+      // @ts-ignore
+      setModalData(node.data);
       // Aim at node from outside it
       const distance = 40;
       const distRatio =
@@ -48,43 +33,65 @@ export const ThreeDGraph = () => {
         distance /
           Math.hypot(node.x as number, node.y as number, node.z as number);
 
-      fgRef.current!.cameraPosition(
-        {
-          x: node.x! * distRatio,
-          y: node.y! * distRatio,
-          z: node.z! * distRatio,
-        }, // new position
-        node, // lookAt ({ x, y, z })
-        3000 // ms transition duration
-      );
+      if (fgRef && fgRef.current) {
+        // @ts-ignore
+        fgRef.current.cameraPosition(
+          {
+            x: node.x! * distRatio,
+            y: node.y! * distRatio,
+            z: node.z! * distRatio,
+          }, // new position
+          node, // lookAt ({ x, y, z })
+          3000 // ms transition duration
+        );
+      }
     },
     [fgRef]
   );
 
   return (
-    <ForceGraph3D
-      ref={fgRef}
-      graphData={myData}
-      nodeLabel="id"
-      nodeAutoColorBy="group"
-      linkThreeObjectExtend={true}
-      linkThreeObject={(link: Links) => {
-        console.log(link);
-        const sprite = new SpriteText(`${link.source.id} > ${link.target.id}`);
-        sprite.color = "lightgrey";
-        sprite.textHeight = 1.5;
-        return sprite;
-      }}
-      linkPositionUpdate={(sprite, { start, end }) => {
-        const middlePos = Object.assign(
-          ...["x", "y", "z"].map((c) => ({
-            [c]: start[c] + (end[c] - start[c]) / 2,
-          }))
-        );
+    <>
+      <ForceGraph3D
+        ref={fgRef}
+        graphData={{ nodes: GRAPH_DATA.nodes, links: GRAPH_DATA.links }}
+        backgroundColor='white'
+        linkAutoColorBy='id'
+        linkWidth={1}
+        // nodeAutoColorBy="group"
+        nodeThreeObjectExtend
+        nodeThreeObject={(node) => {
+          const sprite = new SpriteText(node.data.title);
+          sprite.color = "black";
+          sprite.textHeight = 1.5;
+          return sprite;
+        }}
+        linkPositionUpdate={(sprite, { start, end }) => {
+          const middlePos = Object.assign(
+            // @ts-ignore
+            ...["x", "y", "z"].map((c) => ({
+              [c]: start[c] + (end[c] - start[c]) / 2,
+            }))
+          );
 
-        Object.assign(sprite.position, middlePos);
-      }}
-      onNodeClick={handleClick}
-    />
+          Object.assign(sprite.position, middlePos);
+        }}
+        onNodeClick={handleClick}
+      />
+
+      <Modal
+        opened={opened}
+        onClose={close}
+        overlayProps={{
+          backgroundOpacity: 0.55,
+          blur: 3,
+        }}
+      >
+        <NodeInfo
+          title={modalData?.title}
+          description={modalData?.description}
+          views={modalData?.views}
+        />
+      </Modal>
+    </>
   );
 };

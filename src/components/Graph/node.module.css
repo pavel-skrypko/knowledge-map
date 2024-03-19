@@ -1,0 +1,33 @@
+.nodeContainer {
+  border: 1px solid var(--color-gray-300);
+  background: #fff;
+  border-radius: 4px;
+  width: 320px;
+  max-height: 120px;
+}
+.nodeTitleContainer {
+  background: var(--color-gray-100);
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
+}
+.nodeTitle {
+  color: var(--color-primary-900);
+  font-size: var(--mantine-font-size-sm);
+  line-height: var(--mantine-line-height-xs);
+  overflow: hidden;
+  width: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.nodeContentContainer {
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
+}
+
+.viewsContainer {
+  display: flex;
+  font-size: var(--mantine-font-size-xs);
+  color: var(--color-gray-700);
+  justify-content: center;
+  align-items: center;
+}

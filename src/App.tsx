@@ -1,13 +1,13 @@
-import "@mantine/core/styles.css";
+import '@mantine/core/styles.css';
+import './styles/index.css';
 
 import { MantineProvider } from "@mantine/core";
-
-import BasicTabs from "./components/Tabs/Tabs";
+import { Router } from './Router';
 
 function App() {
   return (
     <MantineProvider>
-      <BasicTabs />
+      <Router />
     </MantineProvider>
   );
 }

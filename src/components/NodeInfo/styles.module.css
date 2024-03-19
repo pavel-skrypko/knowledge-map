@@ -1,0 +1,17 @@
+.title {
+  color: var(--color-primary-900);
+  font-size: var(--mantine-font-size-lg);
+  line-height: var(--mantine-line-height-xs);
+  padding-bottom: var(--mantine-spacing-xs);
+  font-weight: bold;
+}
+.description {
+  padding-bottom: var(--mantine-spacing-xs);
+}
+.views {
+  display: flex;
+  font-size: var(--mantine-font-size-xs);
+  color: var(--color-gray-700);
+  justify-content: center;
+  align-items: center;
+}

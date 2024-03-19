@@ -1,4 +1,7 @@
-import { Handle, NodeProps, Position } from "reactflow";
+import styles from './node.module.css';
+
+import { Handle, NodeProps, Position } from 'reactflow';
+import {  IconEye } from '@tabler/icons-react';
 
 type NodeData = {
   title: string;
@@ -8,16 +11,28 @@ type NodeData = {
 export const CustomArticleNode = ({
   data,
   isConnectable,
+  ...props
 }: NodeProps<NodeData>) => {
   return (
-    <div style={{ border: "1px dotted #eaeaea", padding: "0 10px" }}>
+    <div className={styles.nodeContainer}>
       <Handle
         type="target"
         position={Position.Top}
         isConnectable={isConnectable}
       />
-      <div>{data.title}</div>
-      <div>Views: {data.views}</div>
+
+      <div className={styles.nodeTitleContainer}>
+        <div className={styles.nodeTitle}>
+          {data.title}
+        </div>
+      </div>
+
+      <div className={styles.nodeContentContainer}>
+        <div className={styles.viewsContainer}>
+          <IconEye />{data.views}
+        </div>
+      </div>
+
       <Handle
         type="source"
         position={Position.Bottom}

@@ -1,0 +1,45 @@
+:root {
+  --color-primary-100: #dbefff;
+  --color-primary-200: #a7d4f7;
+  --color-primary-300: #55aff5;
+  --color-primary-500: #0056b4;
+  --color-primary-700: #01478c;
+  --color-primary-900: #002951;
+  --color-secondary-100: #ffe6eb;
+  --color-secondary-500: #fd635e;
+  --color-secondary-900: #ac3747;
+  --color-tertiary-100: #d1efde;
+  --color-tertiary-500: #39d098;
+  --color-tertiary-900: #547967;
+  --color-quaternary-100: #ffddcb;
+  --color-quaternary-500: #ffcb9a;
+  --color-quaternary-900: #b06127;
+  --color-quinary-100: #ead3f4;
+  --color-quinary-500: #c678eb;
+  --color-quinary-900: #5b2983;
+  --color-gray-0: #fff;
+  --color-gray-100: #f3f6f9;
+  --color-gray-200: #e2e6eb;
+  --color-gray-300: #d0d5d9;
+  --color-gray-500: #8b949e;
+  --color-gray-700: #4d5a66;
+  --color-gray-900: #323b42;
+  --color-gray-1000: #000;
+
+  --global-font-size: 16;
+  --global-font-line-height: 1.7;
+  --global-headline-line-height: 1.2;
+  --global-letter-spacing: normal;
+  --global-h1-font-size: calc(32/var(--global-font-size)*1rem);
+  --global-h2-font-size: calc(30/var(--global-font-size)*1rem);
+  --global-h3-font-size: calc(28/var(--global-font-size)*1rem);
+  --global-h4-font-size: calc(24/var(--global-font-size)*1rem);
+  --global-h5-font-size: calc(20/var(--global-font-size)*1rem);
+  --global-h6-font-size: calc(18/var(--global-font-size)*1rem);
+  --font-size-smallest: calc(10/var(--global-font-size)*1rem);
+  --font-size-smaller: calc(14/var(--global-font-size)*1rem);
+  --font-size-small: calc(16/var(--global-font-size)*1rem);
+  --font-size-regular: calc(18/var(--global-font-size)*1rem);
+  --font-size-large: calc(22/var(--global-font-size)*1rem);
+  --font-size-larger: var(--global-h3-font-size);
+}

@@ -1,32 +1,23 @@
-import "reactflow/dist/style.css";
+import 'reactflow/dist/style.css';
 
-import { useCallback, useState } from "react";
+import { useState } from 'react';
+import { useDisclosure } from '@mantine/hooks';
+import { Modal } from '@mantine/core';
 import ReactFlow, {
   Controls,
   MiniMap,
-  addEdge,
-  OnConnect,
   Background,
   BackgroundVariant,
-  Edge,
   FitViewOptions,
   DefaultEdgeOptions,
-  Node,
-  applyNodeChanges,
-  applyEdgeChanges,
-  OnNodesChange,
-  OnEdgesChange,
+  useNodesState,
+  useEdgesState,
 } from "reactflow";
-import { dataMockEdges, dataMockNodes } from "./data.mock";
-import { CustomArticleNode } from "./node";
-import { FormProvider, useForm } from "react-hook-form";
-import { FilterForm } from "./components/FilterForm";
+import dagre from 'dagre';
 
-import HelpIcon from "@mui/icons-material/Help";
-import { Box, Button, Grid, Modal, Typography } from "@mui/material";
-interface FormProps {
-  category: string;
-}
+import { CustomArticleNode } from './node';
+import NodeInfo from '../NodeInfo';
+import * as DATA from '../../data/graph.json';
 
 const fitViewOptions: FitViewOptions = {
   padding: 0.2,
@@ -38,95 +29,97 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
 
 const nodeTypes = { articleNode: CustomArticleNode };
 
-const Graph = () => {
-  const methods = useForm<FormProps>({
-    criteriaMode: "all",
-    mode: "onChange",
-    defaultValues: {
-      category: "",
-    },
+const dagreGraph = new dagre.graphlib.Graph();
+dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+const nodeWidth = 320;
+const nodeHeight = 240;
+
+const getLayoutedElements = (nodes, edges, direction = 'TB') => {
+  const isHorizontal = direction === 'LR';
+  dagreGraph.setGraph({ rankdir: direction });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
   });
 
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
 
-  const [nodes, setNodes] = useState<Node[]>(dataMockNodes);
-  const [edges, setEdges] = useState<Edge[]>(dataMockEdges);
+  dagre.layout(dagreGraph);
 
-  const onNodesChange: OnNodesChange = useCallback(
-    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    [setNodes]
-  );
-  const onEdgesChange: OnEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [setEdges]
-  );
+  nodes.forEach((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    node.targetPosition = isHorizontal ? 'left' : 'top';
+    node.sourcePosition = isHorizontal ? 'right' : 'bottom';
 
-  const onConnect: OnConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
-  );
+    node.position = {
+      x: nodeWithPosition.x - nodeWidth / 2,
+      y: nodeWithPosition.y - nodeHeight / 2,
+    };
+
+    return node;
+  });
+
+  return { nodes, edges };
+};
+
+const GRAPH_DATA = JSON.parse(JSON.stringify(DATA));
+
+const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+  GRAPH_DATA.nodes,
+  GRAPH_DATA.links
+);
+
+const Graph = () => {
+  const [opened, { open, close }] = useDisclosure(false);
+  const [modalData, setModalData] = useState(null);
+
+  const onNodeClick = (e, node) => {
+    open();
+    setModalData(node.data);
+  };
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
 
   return (
-    <FormProvider {...methods}>
-      <Grid
-        container
-        direction="row"
-        xs={12}
-        sx={{ width: "100vw" }}
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <FilterForm />
-        <HelpIcon onClick={handleOpen} />
-      </Grid>
+    <>
       <div style={{ width: "100%", height: "100vh" }}>
         <ReactFlow
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
+          onNodeClick={onNodeClick}
           fitView
           fitViewOptions={fitViewOptions}
           defaultEdgeOptions={defaultEdgeOptions}
           nodeTypes={nodeTypes}
+          onlyRenderVisibleElements={false}
         >
           <Controls />
           <MiniMap />
           <Background variant={BackgroundVariant.Cross} gap={10} size={1} />
         </ReactFlow>
       </div>
+
       <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+        opened={opened}
+        onClose={close}
+        overlayProps={{
+          backgroundOpacity: 0.55,
+          blur: 3,
+        }}
       >
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "background.paper",
-            border: "2px solid #000",
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Title
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Text
-          </Typography>
-          <Button onClick={handleClose}>X</Button>
-        </Box>
+        <NodeInfo
+          title={modalData?.title}
+          description={modalData?.description}
+          views={modalData?.views}
+        />
       </Modal>
-    </FormProvider>
+    </>
   );
 };
 
